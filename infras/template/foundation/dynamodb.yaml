@@ -1,0 +1,20 @@
+
+
+Resources:
+  CoffeeShopDB:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Material
+      AttributeDefinitions:
+        - AttributeName: ID
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+Outputs:
+  CoffeeShopTableArn:
+    Description: ARN of the DynamoDB table
+    Value: !GetAtt CoffeeShopDB.Arn
