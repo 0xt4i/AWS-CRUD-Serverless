@@ -1,0 +1,74 @@
+# https://cloudonaut.io/create-a-serverless-restful-api-with-api-gateway-cloudformation-lambda-and-dynamodb/#:~:text=This%20article%20teaches%20you%20how%20to%20create%20a,functionality.%20DynamoDB%20is%20used%20to%20store%20the%20data.
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/AWS_ApiGateway.html
+Parameters:
+  LambdaGetFunctArn:
+    Type: String
+  LambdaPostFunctArn:
+    Type: String
+  LambdaDeleteFunctArn:
+    Type: String
+  LambdaUpdateFunctArn:
+    Type: String
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation Template for API Gateway'
+
+Resources:
+  RestApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: RESTApi
+
+  UserModel:
+    Type: 'AWS::ApiGateway::Model'
+    Properties:
+      RestApiId: !Ref RestApiGateway
+      ContentType: application/json
+      Description: Schema for Pets example
+      Name: PetsModelNoFlatten
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        title: User
+        type: object
+        properties:
+          uid:
+            type: string
+          email:
+            type: string
+          phone:
+            type: string   
+        required:
+          [uid, email, phone]
+
+  UsersResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt RestApiGateway.RootResourceId
+      RestApiId: !Ref RestApiGateway
+      PathPart: 'users'
+
+  UsersGet:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      Integration: 
+        Type: "AWS"
+        IntegrationHttpMethod: "POST"
+        Uri: 
+          !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaGetFunctArn}/invocations" 
+      RequestParameters:
+        method.request.querystring.limit: false
+        method.request.querystring.next: false
+      MethodResponses:
+        ResponseModels:
+          application/json: !Ref UsersModel
+        ResponseParameters: 
+          method.response.header.Link: true
+        StatusCode: 200
+      
+  RestApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties: 
+      RestApiId: !Ref RestApiGateway
+      StageName: v1
+    DependsOn:
+      - UsersGet
+      - UsersPost 

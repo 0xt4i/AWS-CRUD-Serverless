@@ -1,20 +1,23 @@
-
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create DynamoDB table for CoffeeShop
 
 Resources:
   CoffeeShopDB:
-  Type: AWS::DynamoDB::Table
-  Properties:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: Material
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: ID
           AttributeType: S
-      BillingMode: PAY_PER_REQUEST
       KeySchema:
         - AttributeName: ID
           KeyType: HASH
+
 Outputs:
   CoffeeShopTableArn:
     Description: ARN of the DynamoDB table
     Value: !GetAtt CoffeeShopDB.Arn
+  CoffeeShopTableName:
+    Description: Name of the DynamoDB table
+    Value: !Ref CoffeeShopDB

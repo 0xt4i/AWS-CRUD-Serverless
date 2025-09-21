@@ -1,19 +1,13 @@
 
 
 Parameters:
-  TemplateURL:
-    Description: URL of the nested stack template
+  DynamoTableArn:
     Type: String
-
+    
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Allows Lambda functions to call AWS services on your behalf
 
 Resources:
-  CoffeeShopDBStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Ref TemplateURL
-      TimeoutInMinutes: 5
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-role.html#cfn-iam-role-managedpolicyarns
   CoffeeShopRole: 
     Type: "AWS::IAM::Role"
@@ -46,14 +40,12 @@ Resources:
                   - dynamodb:GetItem
                   - dynamodb:Scan
                   - dynamodb:UpdateItem
-                Resource: !GetAtt CoffeeShopDBStack.Outputs.  
+                Resource: !Ref DynamoTableArn
           PolicyName: DynamoDB-Policy
       Path: "/"
 
-  CoffeeShopInstanceProfile: 
-    Type: "AWS::IAM::InstanceProfile"
-    Properties: 
-      Path: "/"
-      Roles: 
-        - !Ref CoffeeShopRole
-
+  
+Outputs:
+  CoffeeShopRoleArn:
+    Description: Execution role ARN for Lambda
+    Value: !GetAtt CoffeeShopRole.Arn

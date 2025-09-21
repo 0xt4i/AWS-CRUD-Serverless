@@ -1,0 +1,13 @@
+Resources:
+  s3bucket-template:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName: !Sub "${AWS::Region}-${AWS::StackName}-templates"
+  s3bucket-code:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName: !Sub "${AWS::Region}-${AWS::StackName}-code"

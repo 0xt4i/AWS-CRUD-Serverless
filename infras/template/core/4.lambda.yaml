@@ -1,0 +1,91 @@
+Parameters:
+  CoffeeShopRoleArn:
+    Type: String
+  CoffeeShopTableName:
+    Type: String
+    
+AWSTemplateFormatVersion: '2010-09-09'
+Description:  CloudFormation Template for Lambda Function with Lambda Layer.
+
+Resources:
+  LambdaLayer:
+    ype: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: lambda-layer
+      Description: My Lambda Layer
+      Content:
+        S3Bucket: !Sub "${AWS::Region}-${AWS::StackName}-code"
+        S3Key: ./layer.zip
+      CompatibleRuntimes:
+        - nodejs22.x
+        - nodejs20.x
+
+  GetLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: nodejs20.x
+      Handler: get.getCoffee
+      Role: !Ref CoffeeShopRoleArn
+      Code:
+        S3Bucket: !Sub "${AWS::Region}-${AWS::StackName}-code"
+        S3Key: ./get.zip
+      TracingConfig:
+        Mode: Active
+      Layers:
+        - !Ref LambdaLayer
+
+  DeleteLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: nodejs20.x
+      Handler: get.getCoffee
+      Role: !Ref CoffeeShopRoleArn
+      Code:
+        S3Bucket: !Sub "${AWS::Region}-${AWS::StackName}-code"
+        S3Key: ./delete.zip
+      TracingConfig:
+        Mode: Active
+      Layers:
+        - !Ref LambdaLayer
+
+  PostLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: nodejs20.x
+      Handler: get.getCoffee
+      Role: !Ref CoffeeShopRoleArn
+      Code:
+        S3Bucket: !Sub "${AWS::Region}-${AWS::StackName}-code"
+        S3Key: ./post.zip
+      TracingConfig:
+        Mode: Active
+      Layers:
+        - !Ref LambdaLayer
+  
+  UpdateLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: nodejs20.x
+      Handler: get.getCoffee
+      Role: !Ref CoffeeShopRoleArn
+      Code:
+        S3Bucket: !Sub "${AWS::Region}-${AWS::StackName}-code"
+        S3Key: ./update.zip
+      TracingConfig:
+        Mode: Active
+      Layers:
+        - !Ref LambdaLayer
+
+Outputs:
+  LambdaGetFunctArn:
+    Description: Get Lambda ARN
+    Value: GetLambdaFunction.Arn
+  LambdaPostFunctArn:
+    Description: Get Lambda ARN
+    Value: PostLambdaFunction.Arn
+  LambdaDeleteFunctArn:
+    Description: Get Lambda ARN
+    Value: DeleteLambdaFunction.Arn
+  LambdaUpdateFunctArn:
+    Description: Get Lambda ARN
+    Value: UpdateLambdaFunction.Arn

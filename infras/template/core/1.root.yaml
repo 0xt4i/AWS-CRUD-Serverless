@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Top-level stack that deploys DynamoDB and IAM nested stacks and wires outputs->params
+
+Resources:
+  DynamodbNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      # Dùng đường dẫn cục bộ; lệnh package sẽ tự upload và rewrite sang S3 URL
+      TemplateURL: ./2.dynamodb.yaml
+      TimeoutInMinutes: 5
+
+  IamNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./3.iam-lambda.yaml
+      TimeoutInMinutes: 5
+      Parameters:
+        # Truyền Output từ nested DynamoDB vào tham số của nested IAM
+        DynamoTableArn: !GetAtt DynamodbNestedStack.Outputs.CoffeeShopTableArn
+
+  LambdaNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./4.lambda.yaml
+      TimeoutInMinutes: 5
+      Parameters:
+        CoffeeShopRoleArn: !GetAtt IamNestedStack.Outputs.CoffeeShopRoleArn
+        DynamoTableName: !GetAtt DynamodbNestedStack.Outputs.CoffeeShopTableName
+
+  ApiGatewayNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./5.api-gateway.yaml
+      TimeoutInMinutes: 5
+      Parameters:
+        LambdaGetFunctArn: LambdaNestedStack.Outputs.LambdaGetFunctArn
+        LambdaPostFunctArn: LambdaNestedStack.Outputs.LambdaPostFunctArn
+        LambdaDeleteFunctArn: LambdaNestedStack.Outputs.LambdaDeleteFunctArn
+        LambdaUpdateFunctArn: LambdaNestedStack.Outputs.LambdaUpdateFunctArn
+
+
+  
+
+         
+    
+  
