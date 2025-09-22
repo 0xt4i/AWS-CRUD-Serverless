@@ -2,24 +2,6 @@ Parameters:
   DynamoTableArn:
     Type: String
 
-  LambdaGetFunctArn: 
-    Type: String
-    Default: !ImportValue LambdaGetFunctArn
-
-  LambdaPostFunctArn:
-    Type: String
-    Default: !ImportValue LambdaPostFunctArn
-
-  LambdaDeleteFunctArn:
-    Type: String
-    Default: !ImportValue LambdaDeleteFunctArn
-
-  LambdaUpdateFunctArn:
-    Type: String
-    Default: !ImportValue LambdaUpdateFunctArn
-
-
-    
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Allows Lambda functions to call AWS services on your behalf
 
@@ -73,7 +55,7 @@ Resources:
               Service:
                 - apigateway.amazonaws.com
       Policies:
-        - PolicyName: !Sub "${Prefix}-InvokeFunctionPolicy"
+        - PolicyName: !Sub "ApiGatewayRole-InvokeFunctionPolicy"
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -81,7 +63,7 @@ Resources:
                 Action:
                   - lambda:InvokeFunction
                 Resource:
-                  - !Ref LambdaGetFunctArn
+                  - !ImportValue LambdaGetFunctArn
   
 Outputs:
   CoffeeShopRoleArn:

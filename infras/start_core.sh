@@ -4,7 +4,7 @@ set -e
 parent_packaged='template/core/parent.packaged.yaml'
 
 aws cloudformation create-stack \
-    --stack-name project-1 \
+    --stack-name project1-stack \
     --template-body file://$parent_packaged \
-    --output json
+    --capabilities CAPABILITY_NAMED_IAM
 

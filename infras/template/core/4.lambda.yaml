@@ -80,7 +80,9 @@ Outputs:
   LambdaGetFunctArn:
     Description: Get Lambda ARN
     Value: !GetAt GetLambdaFunction.Arn
-    Name: LambdaGetFunctArn
+    Export:
+      Name: LambdaGetFunctArn
+
   LambdaPostFunctArn:
     Description: Get Lambda ARN
     Value: !GetAt PostLambdaFunction.Arn

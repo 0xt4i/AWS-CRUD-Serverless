@@ -4,15 +4,15 @@ set -u  # Báo lỗi nếu dùng biến chưa được gán
 set -o pipefail  # Báo lỗi nếu lệnh trong pipeline bị lỗi
 
 # Khai báo biến
-name_stack_s3='s3-project1-stack'
-parent_packaged='template/core/parent.packaged.yaml'
+ name_stack_s3='s3-project1-stack'
+ parent_packaged='template/core/parent.packaged.yaml'
 
 echo "🚀 Tạo stack S3: $name_stack_s3"
 aws cloudformation create-stack \
   --stack-name "$name_stack_s3" \
   --template-body file://template/foundation/0.s3.yaml \
   --output json
-
+echo "⏳ Chờ stack S3 hoàn tất..."
 # Lấy tên bucket chứa 'code' và 'template'
 store_code=$(aws s3 ls | grep code | awk '{print $3}')
 echo "Debug store_code:"
