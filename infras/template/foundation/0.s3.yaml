@@ -1,13 +1,15 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation Template for S3 buckets to store code and templates'
+
 Resources:
-  s3bucket-template:
+  S3Template:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
     Properties:
       BucketName: !Sub "${AWS::Region}-${AWS::StackName}-templates"
-  s3bucket-code:
+  S3Code:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
     Properties:
       BucketName: !Sub "${AWS::Region}-${AWS::StackName}-code"

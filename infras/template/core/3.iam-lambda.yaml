@@ -1,8 +1,24 @@
-
-
 Parameters:
   DynamoTableArn:
     Type: String
+
+  LambdaGetFunctArn: 
+    Type: String
+    Default: !ImportValue LambdaGetFunctArn
+
+  LambdaPostFunctArn:
+    Type: String
+    Default: !ImportValue LambdaPostFunctArn
+
+  LambdaDeleteFunctArn:
+    Type: String
+    Default: !ImportValue LambdaDeleteFunctArn
+
+  LambdaUpdateFunctArn:
+    Type: String
+    Default: !ImportValue LambdaUpdateFunctArn
+
+
     
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Allows Lambda functions to call AWS services on your behalf
@@ -43,9 +59,34 @@ Resources:
                 Resource: !Ref DynamoTableArn
           PolicyName: DynamoDB-Policy
       Path: "/"
-
+      
+  # The contents authorize API Gateway to invoke a backend Lambda function.
+  ApiGatewayRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+      Policies:
+        - PolicyName: !Sub "${Prefix}-InvokeFunctionPolicy"
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !Ref LambdaGetFunctArn
   
 Outputs:
   CoffeeShopRoleArn:
     Description: Execution role ARN for Lambda
     Value: !GetAtt CoffeeShopRole.Arn
+  ApiGatewayRole:
+    Description: Role for API Gateway to invoke Lambda functions
+    Value: !GetAtt ApiGatewayRole.Arn

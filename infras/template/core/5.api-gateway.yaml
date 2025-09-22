@@ -1,5 +1,6 @@
 # https://cloudonaut.io/create-a-serverless-restful-api-with-api-gateway-cloudformation-lambda-and-dynamodb/#:~:text=This%20article%20teaches%20you%20how%20to%20create%20a,functionality.%20DynamoDB%20is%20used%20to%20store%20the%20data.
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/AWS_ApiGateway.html
+# https://awstut.com/en/2022/05/22/create-rest-api-type-api-gateway-using-cloudformation-en/
 Parameters:
   LambdaGetFunctArn:
     Type: String
@@ -9,10 +10,14 @@ Parameters:
     Type: String
   LambdaUpdateFunctArn:
     Type: String
+  ApiGatewayRoleArn:
+    Type: String
+
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'CloudFormation Template for API Gateway'
 
 Resources:
+  # The point is to specify the API endpoint type for the REST API
   RestApiGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -46,12 +51,13 @@ Resources:
       RestApiId: !Ref RestApiGateway
       PathPart: 'users'
 
-  UsersGet:
+  UsersGetMethod:
     Type: "AWS::ApiGateway::Method"
     Properties:
       Integration: 
         Type: "AWS"
         IntegrationHttpMethod: "POST"
+        Credentials: !Ref ApiGatewayRole
         Uri: 
           !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaGetFunctArn}/invocations" 
       RequestParameters:
@@ -70,5 +76,17 @@ Resources:
       RestApiId: !Ref RestApiGateway
       StageName: v1
     DependsOn:
-      - UsersGet
-      - UsersPost 
+      - UsersGetMethod
+  
+  RestApiGatewayStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref RestApiGatewayDeployment
+      RestApiId: !Ref RestRestApiGatewayApi
+      StageName: Dev
+Outputs:
+  UsersGetMethodArn:
+    Description: "ARN of the GET method of /users resource"
+    Value: 
+      !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${RestApiGateway}/resources/${UsersResource}/methods/GET"
+    Export: "${AWS::StackName}-ApiGatewayGetMethodArn"

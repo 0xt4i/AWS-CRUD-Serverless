@@ -1,3 +1,11 @@
+# Prepare 
+
+```bash
+wget https://raw.githubusercontent.com/go-to-k/delstack/main/install.sh
+bash install.sh
+
+``
+
 # Deploy
 ## Define variable enviroment
 ```bash

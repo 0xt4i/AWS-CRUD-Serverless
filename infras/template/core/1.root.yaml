@@ -18,6 +18,7 @@ Resources:
         # Truyền Output từ nested DynamoDB vào tham số của nested IAM
         DynamoTableArn: !GetAtt DynamodbNestedStack.Outputs.CoffeeShopTableArn
 
+
   LambdaNestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -33,10 +34,12 @@ Resources:
       TemplateURL: ./5.api-gateway.yaml
       TimeoutInMinutes: 5
       Parameters:
-        LambdaGetFunctArn: LambdaNestedStack.Outputs.LambdaGetFunctArn
-        LambdaPostFunctArn: LambdaNestedStack.Outputs.LambdaPostFunctArn
-        LambdaDeleteFunctArn: LambdaNestedStack.Outputs.LambdaDeleteFunctArn
-        LambdaUpdateFunctArn: LambdaNestedStack.Outputs.LambdaUpdateFunctArn
+        LambdaGetFunctArn: !GetAtt LambdaNestedStack.Outputs.LambdaGetFunctArn
+        LambdaPostFunctArn: !GetAtt LambdaNestedStack.Outputs.LambdaPostFunctArn
+        LambdaDeleteFunctArn: !GetAtt LambdaNestedStack.Outputs.LambdaDeleteFunctArn
+        LambdaUpdateFunctArn: !GetAtt LambdaNestedStack.Outputs.LambdaUpdateFunctArn
+        ApiGatewayRole: !GetAtt IamNestedStack.Outputs.ApiGatewayRole
+
 
 
   

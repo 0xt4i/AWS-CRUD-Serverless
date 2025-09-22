@@ -9,7 +9,7 @@ Description:  CloudFormation Template for Lambda Function with Lambda Layer.
 
 Resources:
   LambdaLayer:
-    ype: AWS::Lambda::LayerVersion
+    Type: AWS::Lambda::LayerVersion
     Properties:
       LayerName: lambda-layer
       Description: My Lambda Layer
@@ -79,13 +79,17 @@ Resources:
 Outputs:
   LambdaGetFunctArn:
     Description: Get Lambda ARN
-    Value: GetLambdaFunction.Arn
+    Value: !GetAt GetLambdaFunction.Arn
+    Name: LambdaGetFunctArn
   LambdaPostFunctArn:
     Description: Get Lambda ARN
-    Value: PostLambdaFunction.Arn
+    Value: !GetAt PostLambdaFunction.Arn
+    Name: LambdaPostFunctArn
   LambdaDeleteFunctArn:
     Description: Get Lambda ARN
-    Value: DeleteLambdaFunction.Arn
+    Value: !GetAt DeleteLambdaFunction.Arn
+    Name: LambdaDeleteFunctArn
   LambdaUpdateFunctArn:
     Description: Get Lambda ARN
-    Value: UpdateLambdaFunction.Arn
+    Value: !GetAt UpdateLambdaFunction.Arn
+    Name: LambdaUpdateFunctArn

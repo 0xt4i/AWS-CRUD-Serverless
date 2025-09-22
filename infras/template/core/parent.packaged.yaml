@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Top-level stack that deploys DynamoDB and IAM nested stacks and wires
+  outputs->params
+Resources:
+  DynamodbNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/us-east-1-s3-stack-templates/2cf949746af180fe18f26bf3db015f1c.template
+      TimeoutInMinutes: 5
+  IamNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/us-east-1-s3-stack-templates/a969fb0096e1929ac6da97aba76311ca.template
+      TimeoutInMinutes: 5
+      Parameters:
+        DynamoTableArn:
+          Fn::GetAtt:
+          - DynamodbNestedStack
+          - Outputs.CoffeeShopTableArn
+  LambdaNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/us-east-1-s3-stack-templates/8b73c6e7316d4e53d61f968510c2ab03.template
+      TimeoutInMinutes: 5
+      Parameters:
+        CoffeeShopRoleArn:
+          Fn::GetAtt:
+          - IamNestedStack
+          - Outputs.CoffeeShopRoleArn
+        DynamoTableName:
+          Fn::GetAtt:
+          - DynamodbNestedStack
+          - Outputs.CoffeeShopTableName
+  ApiGatewayNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/us-east-1-s3-stack-templates/95461dd61eee24daf14856cc1eda0682.template
+      TimeoutInMinutes: 5
+      Parameters:
+        LambdaGetFunctArn:
+          Fn::GetAtt:
+          - LambdaNestedStack
+          - Outputs.LambdaGetFunctArn
+        LambdaPostFunctArn:
+          Fn::GetAtt:
+          - LambdaNestedStack
+          - Outputs.LambdaPostFunctArn
+        LambdaDeleteFunctArn:
+          Fn::GetAtt:
+          - LambdaNestedStack
+          - Outputs.LambdaDeleteFunctArn
+        LambdaUpdateFunctArn:
+          Fn::GetAtt:
+          - LambdaNestedStack
+          - Outputs.LambdaUpdateFunctArn
+        ApiGatewayRole:
+          Fn::GetAtt:
+          - IamNestedStack
+          - Outputs.ApiGatewayRole
